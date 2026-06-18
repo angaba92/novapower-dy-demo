@@ -17,7 +17,8 @@ export default async function handler(req: any, res: any) {
   const body = (req.body ?? {}) as CollectEventBody;
   if (!body.name) return res.status(400).json({ error: 'event name is required' });
 
-  const apiKey = (globalThis as any).process?.env?.SHOPPINGMUSE_API_KEY as string | undefined;
+  const apiKey = (globalThis as any).process?.env?.SHOPPINGMUSE_API_KEY as string | undefined
+    ?? '82da6ade9f6ed5075eba88afc6157342af35bf1e2ce5698824372b2e883e6f8f';
 
   // For the demo without a live key, just log and return success so the UI flow continues.
   if (!apiKey) {
