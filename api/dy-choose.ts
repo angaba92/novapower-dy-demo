@@ -22,7 +22,8 @@ export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const body = (req.body ?? {}) as ChooseRequestBody;
-  const apiKey = (globalThis as any).process?.env?.SHOPPINGMUSE_API_KEY as string | undefined;
+  const apiKey = (globalThis as any).process?.env?.SHOPPINGMUSE_API_KEY as string | undefined
+    ?? '82da6ade9f6ed5075eba88afc6157342af35bf1e2ce5698824372b2e883e6f8f';
 
   // For pure demo purposes (no live DY key for the NovaPower section), return
   // a deterministic mock response so the UI remains populated. In production
