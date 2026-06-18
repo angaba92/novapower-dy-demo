@@ -57,7 +57,7 @@ export default async function handler(req: any, res: any) {
   if (!text) return res.status(400).json({ error: 'text is required' });
   if (text.length > 250) return res.status(400).json({ error: 'text must be 250 characters or fewer' });
 
-  const apiKey = '8841a064d25730a814fb35c575072585fc631088846b79cd7d5d18d020337725';
+  const apiKey = '82da6ade9f6ed5075eba88afc6157342af35bf1e2ce5698824372b2e883e6f8f';
 
   // Dummy values for Muse identity/session fields. In a real deployment these
   // come from the DY context script (window.DY.recommendationContext + cookie
