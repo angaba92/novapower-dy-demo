@@ -38,24 +38,28 @@ export default function PlanCard({ plan, onVisualSearch, fromDY }: PlanCardProps
       : null;
 
   return (
-    <article className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 transition hover:shadow-lg hover:border-[#0a4ea8]/30 dark:bg-slate-800 dark:border-slate-700 dark:hover:border-blue-500/40">
+    <article className="group relative bg-white rounded-xl overflow-hidden border border-gray-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#0a4ea8]/20 dark:bg-slate-800 dark:border-slate-700 dark:hover:border-blue-500/40">
       {/* Image */}
       <Link to={plan.url || `/plan/${plan.sku}`} className="block relative aspect-[4/3] bg-[#f5faff] overflow-hidden dark:bg-slate-700">
         {image && (
           <>
+            {/* Primary image — zooms slightly on hover instead of disappearing */}
             <img
               src={image}
               alt={title}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
+            {/* Gradient overlay — darkens bottom on hover for contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Secondary image if available (crossfade on top) */}
             {imageHover && (
               <img
                 src={imageHover}
                 alt=""
                 aria-hidden
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-80 transition-opacity duration-300"
               />
             )}
           </>
@@ -92,15 +96,18 @@ export default function PlanCard({ plan, onVisualSearch, fromDY }: PlanCardProps
           <ScoreInfoIcon item={plan} />
         </div>
 
-        {/* Hover actions */}
-        <div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0">
+        {/* Hover actions — slide up from bottom over gradient */}
+        <div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               addPlan(plan);
             }}
-            className={clsx('btn-primary flex-1 text-xs py-2', !plan.in_stock && 'opacity-50 pointer-events-none')}
+            className={clsx(
+              'flex-1 text-xs py-2 rounded-lg font-semibold text-white bg-[#0a4ea8] hover:bg-[#0d3f8f] backdrop-blur-sm shadow transition-colors',
+              !plan.in_stock && 'opacity-50 pointer-events-none'
+            )}
           >
             Add to Plan
           </button>
@@ -111,7 +118,7 @@ export default function PlanCard({ plan, onVisualSearch, fromDY }: PlanCardProps
                 e.preventDefault();
                 onVisualSearch(image);
               }}
-              className="grid place-items-center h-9 w-9 rounded-lg bg-white text-[#0a4ea8] border border-[#0a4ea8] hover:bg-[#f5faff] dark:bg-slate-700 dark:text-blue-400 dark:border-blue-500"
+              className="grid place-items-center h-9 w-9 rounded-lg bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30 transition-colors"
               title="Find similar"
               aria-label="Find similar plans"
             >
