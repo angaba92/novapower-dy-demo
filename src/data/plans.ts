@@ -48,6 +48,15 @@ const PHOTOS = {
   leakSensor:       '36571568', // water dripping from a pipe / leak
   homeBundle:       '4474007',  // mother and kids relaxing with the TV remote
   homeBundle2:      '8055075',  // couple watching TV together on the sofa
+  // mobile — distinct per segment
+  smartphonePre:    '3989412',  // young man with hat checking phone in the city (prepaid)
+  smartphonePre2:   '7902334',  // stylish young man with sunglasses and phone (prepaid 15)
+  smartphoneCon:    '13801485', // professional businessman in suit using phone in city (contract 25)
+  smartphoneCon2:   '5584005',  // man speaking on phone in a business setting (contract 50)
+  smartphoneUnl:    '4206911',  // urban cool guy with earbuds and phone (unlimited)
+  smartphoneFam:    '8188720',  // family with children using devices on sofa (family plan)
+  smartphoneTravel: '3243090',  // world map flat-lay with camera and phone (travel eSIM)
+  mobilePlpHero:    '37681094', // happy woman taking selfie, bright lifestyle (PLP hero)
 };
 
 export const plans: Plan[] = [
@@ -532,7 +541,7 @@ export const plans: Plan[] = [
     price: 7.99,
     categories: 'Connectivity|Mobile|Prepaid',
     group_id: 'MOB-PRE',
-    image_url: IMG(PHOTOS.smartphone),
+    image_url: IMG(PHOTOS.smartphonePre),
     in_stock: true,
     keywords: 'mobile|prepaid|5gb|no commitment|sim',
     annual_price: 95.88,
@@ -554,7 +563,7 @@ export const plans: Plan[] = [
     price: 11.99,
     categories: 'Connectivity|Mobile|Prepaid',
     group_id: 'MOB-PRE',
-    image_url: IMG(PHOTOS.smartphone),
+    image_url: IMG(PHOTOS.smartphonePre2),
     in_stock: true,
     keywords: 'mobile|prepaid|15gb|no commitment|sim',
     annual_price: 143.88,
@@ -576,7 +585,7 @@ export const plans: Plan[] = [
     price: 14.99,
     categories: 'Connectivity|Mobile|Contract',
     group_id: 'MOB-CON',
-    image_url: IMG(PHOTOS.smartphone),
+    image_url: IMG(PHOTOS.smartphoneCon),
     in_stock: true,
     keywords: 'mobile|contract|25gb|5g|household',
     annual_price: 179.88,
@@ -599,7 +608,7 @@ export const plans: Plan[] = [
     price: 19.99,
     categories: 'Connectivity|Mobile|Contract',
     group_id: 'MOB-CON',
-    image_url: IMG(PHOTOS.smartphone),
+    image_url: IMG(PHOTOS.smartphoneCon2),
     in_stock: true,
     keywords: 'mobile|contract|50gb|5g|hotspot',
     annual_price: 239.88,
@@ -621,7 +630,7 @@ export const plans: Plan[] = [
     price: 29.99,
     categories: 'Connectivity|Mobile|Contract',
     group_id: 'MOB-CON',
-    image_url: IMG(PHOTOS.smartphone),
+    image_url: IMG(PHOTOS.smartphoneUnl),
     in_stock: true,
     keywords: 'mobile|unlimited|5g|premium|streaming',
     annual_price: 359.88,
@@ -644,7 +653,7 @@ export const plans: Plan[] = [
     price: 49.0,
     categories: 'Connectivity|Mobile|Family',
     group_id: 'MOB-FAM',
-    image_url: IMG(PHOTOS.family),
+    image_url: IMG(PHOTOS.smartphoneFam),
     in_stock: true,
     keywords: 'mobile|family|4 lines|shared data|kids',
     annual_price: 588.0,
@@ -692,7 +701,7 @@ export const plans: Plan[] = [
     price: 9.99,
     categories: 'Connectivity|Mobile|Prepaid',
     group_id: 'MOB-PRE',
-    image_url: IMG(PHOTOS.smartphone),
+    image_url: IMG(PHOTOS.smartphoneTravel),
     in_stock: true,
     keywords: 'esim|travel|tourist|short term|data only',
     annual_price: 119.88,
@@ -1715,7 +1724,7 @@ export const featuredCategories: { slug: string; label: string; description: str
     slug: 'mobile',
     label: 'Mobile',
     description: '5G prepaid, contract and family plans.',
-    image: IMG(PHOTOS.smartphone),
+    image: IMG(PHOTOS.mobilePlpHero),
   },
   {
     slug: 'bundles',
