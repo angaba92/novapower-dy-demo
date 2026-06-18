@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* NovaPower brand palette — energy / sustainability */
+  --color-novapower-blue: #0a4ea8;
+  --color-novapower-blue-dark: #062f66;
+  --color-novapower-cyan: #00b4d8;
+  --color-novapower-green: #2dbe60;
+  --color-novapower-green-dark: #1a8c45;
+  --color-novapower-yellow: #ffc857;
+  --color-novapower-bg: #f5faff;
+  --color-novapower-ink: #0c1b2a;
+
+  --color-glass-white: rgba(255, 255, 255, 0.85);
+  --color-glass-border: rgba(255, 255, 255, 0.25);
+}
+
+@layer base {
+  body {
+    @apply bg-[#f5faff] text-[#0c1b2a] font-sans antialiased dark:bg-slate-900 dark:text-slate-100;
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+.frosted-glass {
+  @apply bg-white/75 backdrop-blur-md border border-white/30;
+}
+.frosted-glass-dark {
+  @apply bg-[#062f66]/85 backdrop-blur-md border border-white/10 text-white;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-[#0a4ea8] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#062f66] disabled:opacity-50 disabled:pointer-events-none;
+}
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-[#0a4ea8] bg-white px-5 py-2.5 text-sm font-semibold text-[#0a4ea8] transition hover:bg-[#f5faff] dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700;
+}
+.btn-green {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-[#2dbe60] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1a8c45];
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #062f66 0%, #0a4ea8 45%, #00b4d8 100%);
+}
+.gradient-eco {
+  background: linear-gradient(135deg, #1a8c45 0%, #2dbe60 100%);
+}
+
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.3) transparent; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.3); border-radius: 3px; }
+.dark .custom-scrollbar { scrollbar-color: rgba(255,255,255,0.2) transparent; }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); }

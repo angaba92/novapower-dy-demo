@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaPower — Energy, Broadband & Mobile</title>
+    <meta name="description" content="NovaPower — green energy, fiber broadband and mobile plans. Switch in minutes." />
+
+    <!-- [DY INTEGRATION] Dynamic Yield Context Script
+         Loaded as early as possible. The Section ID below maps to the NovaPower
+         section in the DY console; for this demo we reuse the sinsay_v2 section
+         (8795021). Replace with your own when pointing at a real telco section.
+         Docs: https://support.dynamicyield.com/hc/en-us/articles/360039237694
+    -->
+    <script type="text/javascript">
+      window.DY = window.DY || {};
+      window.DY.recommendationContext = { type: 'HOMEPAGE', data: [] };
+    </script>
+    <!--
+      In production replace the script below with the real DY loader:
+      <script type="text/javascript" src="//cdn.dynamicyield.com/api/8795021/api_dynamic.js"></script>
+      <script type="text/javascript" src="//cdn.dynamicyield.com/api/8795021/api_static.js"></script>
+      The demo bypasses the loader and calls DY directly through the proxies in /api.
+    -->
+  </head>
+  <body class="bg-[#f5faff]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
