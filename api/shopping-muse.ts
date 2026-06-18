@@ -73,7 +73,7 @@ export default async function handler(req: any, res: any) {
       page: { type: pageType, data: pageData, location: pageLocation, locale },
       device: { userAgent, type: deviceType },
     },
-    selector: { name: 'NovaPower Assistant' },
+    selector: { name: 'Shopping Muse' },
     options: {
       returnAnalyticsMetadata: false,
       isImplicitClientData: false,
