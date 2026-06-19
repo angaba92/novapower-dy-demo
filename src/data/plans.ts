@@ -57,6 +57,29 @@ const PHOTOS = {
   smartphoneFam:    '8188720',  // family with children using devices on sofa (family plan)
   smartphoneTravel: '3243090',  // world map flat-lay with camera and phone (travel eSIM)
   mobilePlpHero:    '37681094', // happy woman taking selfie, bright lifestyle (PLP hero)
+  // electricity — distinct per plan
+  elecGreen100:    '414905',   // wind turbine on green hill at golden hour (100% green)
+  elecGreen50:     '10069484', // wind turbines in golden wheat field (50% green)
+  elecFlex:        '32079706', // smart energy monitor display, clean white (flex/no contract)
+  elecFixed12:     '27638181', // smart wall thermostat controller (12m fixed)
+  elecFixed24:     '32079710', // smart meter close-up clean (24m fixed)
+  elecNight:       '9146229',  // city lights at night aerial view (night-saver tariff)
+  elecBizS:        '9889061',  // electricity substation at dusk (business small)
+  elecBizL:        '15893947', // industrial electrical panel hallway (business large)
+  // gas — distinct per plan
+  gasFixed12:      '7859953',  // technician hand on boiler pump (12m contract)
+  gasFixed24:      '8146322',  // modern kitchen with gas hob (24m contract lifestyle)
+  gasFlexBurner:   '13422435', // clean gas stove ring burner (flex/no contract)
+  gasEcoBio:       '32543708', // aerial view of biogas facility with yellow tanks (eco biomethane)
+  gasBiz:          '7937300',  // heating pump with pressure gauge (business)
+  // broadband — distinct per speed tier
+  fiber100:        '14690386', // speed download meter on router display (entry 100 Mb)
+  fiber300:        '32698507', // modern white WiFi 6 router on desk (300 Mb)
+  fiber600:        '29711663', // glowing router neon antennas (600 Mb best seller)
+  fiber1g:         '28348054', // premium multi-antenna glowing router (1 Gig flagship)
+  fiber2g:         '4682189',  // fiber optic patch panel close-up (2 Gig ultra)
+  fiberBiz:        '1181316',  // two engineers walking data center corridor (business)
+  fiberPro:        '17489155', // data center light pillar blue glow (pro/managed)
 };
 
 export const plans: Plan[] = [
@@ -68,7 +91,7 @@ export const plans: Plan[] = [
     price: 49.9,
     categories: 'Energy|Electricity|Green Plans',
     group_id: 'ELEC-GREEN',
-    image_url: IMG(PHOTOS.windFarm),
+    image_url: IMG(PHOTOS.elecGreen100),
     image_url_secondary: IMG(PHOTOS.greenLeaf),
     in_stock: true,
     keywords: 'renewable|wind|solar|no commitment|household|carbon-neutral',
@@ -103,7 +126,7 @@ export const plans: Plan[] = [
     price: 39.9,
     categories: 'Energy|Electricity|Green Plans',
     group_id: 'ELEC-GREEN',
-    image_url: IMG(PHOTOS.solarPanels),
+    image_url: IMG(PHOTOS.elecGreen50),
     in_stock: true,
     keywords: 'renewable|partial green|no commitment|entry-level',
     annual_price: 430.0,
@@ -129,7 +152,7 @@ export const plans: Plan[] = [
     price: 36.5,
     categories: 'Energy|Electricity|Standard',
     group_id: 'ELEC-STD',
-    image_url: IMG(PHOTOS.electricMeter),
+    image_url: IMG(PHOTOS.elecFlex),
     in_stock: true,
     keywords: 'standard|monthly|flexible|no commitment',
     annual_price: 392.0,
@@ -152,7 +175,7 @@ export const plans: Plan[] = [
     price: 42.0,
     categories: 'Energy|Electricity|Fixed',
     group_id: 'ELEC-FIXED',
-    image_url: IMG(PHOTOS.electricMeter),
+    image_url: IMG(PHOTOS.elecFixed12),
     in_stock: true,
     keywords: 'fixed price|12 months|predictable|residential',
     annual_price: 504.0,
@@ -175,7 +198,7 @@ export const plans: Plan[] = [
     price: 39.5,
     categories: 'Energy|Electricity|Fixed',
     group_id: 'ELEC-FIXED',
-    image_url: IMG(PHOTOS.electricMeter),
+    image_url: IMG(PHOTOS.elecFixed24),
     in_stock: true,
     keywords: 'fixed price|24 months|long term|residential|savings',
     annual_price: 474.0,
@@ -202,7 +225,7 @@ export const plans: Plan[] = [
     price: 34.9,
     categories: 'Energy|Electricity|Tariff',
     group_id: 'ELEC-STD',
-    image_url: IMG(PHOTOS.electricMeter),
+    image_url: IMG(PHOTOS.elecNight),
     in_stock: true,
     keywords: 'off-peak|night|EV charging|smart meter|residential',
     annual_price: 419.0,
@@ -224,7 +247,7 @@ export const plans: Plan[] = [
     price: 79.0,
     categories: 'Energy|Electricity|Business',
     group_id: 'ELEC-BIZ',
-    image_url: IMG(PHOTOS.business),
+    image_url: IMG(PHOTOS.elecBizS),
     in_stock: true,
     keywords: 'business|small office|fixed price|dedicated support',
     annual_price: 948.0,
@@ -246,7 +269,7 @@ export const plans: Plan[] = [
     price: 249.0,
     categories: 'Energy|Electricity|Business',
     group_id: 'ELEC-BIZ',
-    image_url: IMG(PHOTOS.business),
+    image_url: IMG(PHOTOS.elecBizL),
     in_stock: true,
     keywords: 'business|industrial|high consumption|account manager',
     annual_price: 2988.0,
@@ -270,7 +293,7 @@ export const plans: Plan[] = [
     price: 32.5,
     categories: 'Energy|Gas|Fixed',
     group_id: 'GAS-FIXED',
-    image_url: IMG(PHOTOS.gasFlame),
+    image_url: IMG(PHOTOS.gasFixed12),
     in_stock: true,
     keywords: 'natural gas|fixed price|residential|heating',
     annual_price: 390.0,
@@ -291,7 +314,7 @@ export const plans: Plan[] = [
     price: 29.9,
     categories: 'Energy|Gas|Fixed',
     group_id: 'GAS-FIXED',
-    image_url: IMG(PHOTOS.gasFlame),
+    image_url: IMG(PHOTOS.gasFixed24),
     in_stock: true,
     keywords: 'natural gas|fixed price|long term|savings',
     annual_price: 358.0,
@@ -314,7 +337,7 @@ export const plans: Plan[] = [
     price: 27.9,
     categories: 'Energy|Gas|Standard',
     group_id: 'GAS-STD',
-    image_url: IMG(PHOTOS.gasFlame),
+    image_url: IMG(PHOTOS.gasFlexBurner),
     in_stock: true,
     keywords: 'gas|monthly|flexible|no commitment',
     annual_price: 335.0,
@@ -335,7 +358,7 @@ export const plans: Plan[] = [
     price: 34.9,
     categories: 'Energy|Gas|Green Plans',
     group_id: 'GAS-ECO',
-    image_url: IMG(PHOTOS.greenLeaf),
+    image_url: IMG(PHOTOS.gasEcoBio),
     in_stock: true,
     keywords: 'biogas|offset|sustainable|certified|residential',
     annual_price: 419.0,
@@ -358,7 +381,7 @@ export const plans: Plan[] = [
     price: 119.0,
     categories: 'Energy|Gas|Business',
     group_id: 'GAS-BIZ',
-    image_url: IMG(PHOTOS.business),
+    image_url: IMG(PHOTOS.gasBiz),
     in_stock: true,
     keywords: 'business|gas|fixed|dedicated support',
     annual_price: 1428.0,
@@ -381,7 +404,7 @@ export const plans: Plan[] = [
     price: 24.99,
     categories: 'Connectivity|Broadband|Fiber',
     group_id: 'FIBER',
-    image_url: IMG(PHOTOS.fiberCable),
+    image_url: IMG(PHOTOS.fiber300),
     image_url_secondary: IMG(PHOTOS.router),
     in_stock: true,
     keywords: 'fiber|broadband|home wifi|symmetric|300mb',
@@ -404,7 +427,7 @@ export const plans: Plan[] = [
     price: 29.99,
     categories: 'Connectivity|Broadband|Fiber',
     group_id: 'FIBER',
-    image_url: IMG(PHOTOS.fiberCable),
+    image_url: IMG(PHOTOS.fiber600),
     in_stock: true,
     keywords: 'fiber|broadband|home wifi|symmetric|600mb|gaming',
     annual_price: 359.88,
@@ -427,7 +450,7 @@ export const plans: Plan[] = [
     price: 39.99,
     categories: 'Connectivity|Broadband|Fiber',
     group_id: 'FIBER',
-    image_url: IMG(PHOTOS.fiberCable),
+    image_url: IMG(PHOTOS.fiber1g),
     in_stock: true,
     keywords: 'fiber|gigabit|broadband|premium|streaming|gaming',
     annual_price: 479.88,
@@ -450,7 +473,7 @@ export const plans: Plan[] = [
     price: 54.99,
     categories: 'Connectivity|Broadband|Fiber',
     group_id: 'FIBER',
-    image_url: IMG(PHOTOS.fiberCable),
+    image_url: IMG(PHOTOS.fiber2g),
     in_stock: true,
     keywords: 'fiber|2 gigabit|premium|professional|max speed',
     annual_price: 659.88,
@@ -472,7 +495,7 @@ export const plans: Plan[] = [
     price: 19.99,
     categories: 'Connectivity|Broadband|Fiber',
     group_id: 'FIBER',
-    image_url: IMG(PHOTOS.fiberCable),
+    image_url: IMG(PHOTOS.fiber100),
     in_stock: true,
     keywords: 'fiber|broadband|entry|cheap|browsing',
     annual_price: 239.88,
@@ -494,7 +517,7 @@ export const plans: Plan[] = [
     price: 59.0,
     categories: 'Connectivity|Broadband|Business',
     group_id: 'FIBER-BIZ',
-    image_url: IMG(PHOTOS.business),
+    image_url: IMG(PHOTOS.fiberBiz),
     in_stock: true,
     keywords: 'business|fiber|gigabit|static IP|SLA|professional',
     annual_price: 708.0,
@@ -517,7 +540,7 @@ export const plans: Plan[] = [
     price: 199.0,
     categories: 'Connectivity|Broadband|Business',
     group_id: 'FIBER-BIZ',
-    image_url: IMG(PHOTOS.business),
+    image_url: IMG(PHOTOS.fiberPro),
     in_stock: false,
     keywords: 'enterprise|10 gigabit|dedicated|datacenter|SLA',
     annual_price: 2388.0,
