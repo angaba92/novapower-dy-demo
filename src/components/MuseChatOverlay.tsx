@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
-import { Loader2, Send, Sparkles, X } from 'lucide-react';
+import { Loader2, Send, ShoppingCart, Sparkles, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useShoppingMuse, type MuseResponse } from '../hooks/useShoppingMuse';
 import { useConfig } from '../context/ConfigContext';
+import { useCart } from '../context/CartContext';
+import { plans } from '../data/plans';
 
 // [DY INTEGRATION] Side panel for DY Shopping Muse / Agent Assistant.
 // Mirrors src/components/MuseChatOverlay.tsx from sinsay_v2 — same chat
@@ -28,6 +30,7 @@ const STARTER_PROMPTS = [
 
 export default function MuseChatOverlay({ onClose }: MuseChatOverlayProps) {
   const { config } = useConfig();
+  const { addPlan } = useCart();
   const muse = useShoppingMuse();
   const [chatId, setChatId] = useState<string | undefined>();
   const [draft, setDraft] = useState('');
@@ -126,13 +129,38 @@ export default function MuseChatOverlay({ onClose }: MuseChatOverlayProps) {
                         const name = data.name || data.productName || slot.sku || 'Plan';
                         const price =
                           typeof data.price === 'number' ? data.price.toFixed(2).replace('.', ',') : data.price;
+                        const [added, setAdded] = useState(false);
+                        const planObj = plans.find((p) => p.sku === slot.sku);
+                        const handleAdd = (e: React.MouseEvent) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (planObj) {
+                            addPlan(planObj);
+                            setAdded(true);
+                            setTimeout(() => setAdded(false), 2000);
+                          }
+                        };
                         return (
-                          <a
+                           <a
                             key={i}
                             href={data.url || `/plan/${slot.sku}`}
-                            className="shrink-0 w-36 rounded-lg overflow-hidden bg-white border border-gray-200 hover:border-[#0a4ea8]/40"
+                            className="group/card shrink-0 w-36 rounded-lg overflow-hidden bg-white border border-gray-200 hover:border-[#0a4ea8]/40 hover:shadow-md transition-shadow"
                           >
-                            {img && <img src={img} alt={name} className="w-full h-24 object-cover" loading="lazy" />}
+                            <div className="relative">
+                              {img && <img src={img} alt={name} className="w-full h-24 object-cover" loading="lazy" />}
+                              {planObj && (
+                                <button
+                                  type="button"
+                                  onClick={handleAdd}
+                                  className={`absolute bottom-1.5 right-1.5 flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full shadow transition-all
+                                    ${added ? 'bg-[#2dbe60] text-white' : 'bg-white/90 backdrop-blur-sm text-[#0a4ea8] border border-[#0a4ea8]/40 hover:bg-[#0a4ea8] hover:text-white'}`}
+                                  title="Add to plan"
+                                >
+                                  <ShoppingCart className="w-3 h-3" />
+                                  {added ? '✓' : '+'}
+                                </button>
+                              )}
+                            </div>
                             <div className="p-2">
                               <div className="text-[12px] font-semibold leading-tight line-clamp-2">{name}</div>
                               {price && (
