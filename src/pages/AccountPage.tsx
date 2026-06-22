@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { findPlan, plans } from '../data/plans';
 import type { Plan } from '../types';
+import { dySelectors } from '../config/dy-selectors';
 
 // Mocked "current contracts" so the account view feels real even with empty cart.
 const MOCK_CURRENT_CONTRACTS = ['BND-DUAL-EG', 'MOB-CON-25'];
@@ -322,7 +323,7 @@ function AccountDashboard({
           affinity profile and known contracts. */}
       <div className="mt-12">
         <RecommendationsWidget
-          selectorName="Account Recommendations"
+          selectorName={dySelectors.account.recs}
           title="Recommended add-ons for you"
           pageType="OTHER"
           pageData={{ activeContracts: contracts.map((c) => c.sku) }}

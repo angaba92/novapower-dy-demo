@@ -19,6 +19,7 @@ import { findPlan, plans } from '../data/plans';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../context/ConfigContext';
 import { trackEvent } from '../utils/dyEvents';
+import { dySelectors } from '../config/dy-selectors';
 
 interface PlanDetailPageProps {
   onVisualSearch?: (productImageUrl?: string) => void;
@@ -300,7 +301,7 @@ export default function PlanDetailPage({ onVisualSearch }: PlanDetailPageProps) 
           "PDP Recommendations" with the current SKU passed as pageData. */}
       <div className="mt-12">
         <RecommendationsWidget
-          selectorName="PDP Recommendations"
+          selectorName={dySelectors.product.recs}
           title="Customers also chose"
           pageType="PRODUCT"
           pageData={{ sku: plan.sku, category: plan.category_l1 }}

@@ -6,6 +6,7 @@ import { MastercardPdpPromo } from '../components/MastercardPromo';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../context/ConfigContext';
 import { findPlan, plans } from '../data/plans';
+import { dySelectors } from '../config/dy-selectors';
 
 export default function CartPage() {
   const { lines, removeLine, updateQuantity, monthlyTotal, count } = useCart();
@@ -34,7 +35,7 @@ export default function CartPage() {
             "Cart Recommendations" with cart context. */}
         <div className="mt-12 text-left">
           <RecommendationsWidget
-            selectorName="Cart Recommendations"
+            selectorName={dySelectors.cart.recs}
             title="Popular starting points"
             pageType="CART"
             fallbackPlans={fallbackCrossSell}
@@ -177,7 +178,7 @@ export default function CartPage() {
           "Cart Recommendations" with cart SKUs in pageData. */}
       <div className="mt-12">
         <RecommendationsWidget
-          selectorName="Cart Recommendations"
+          selectorName={dySelectors.cart.recs}
           title="Make it a complete plan"
           pageType="CART"
           pageData={{ skus: lines.map((l) => l.sku) }}

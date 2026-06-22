@@ -6,6 +6,7 @@ import PlanCard from '../components/PlanCard';
 import RecommendationsWidget from '../components/RecommendationsWidget';
 import { featuredCategories, plansByCategory } from '../data/plans';
 import type { Plan } from '../types';
+import { dySelectors } from '../config/dy-selectors';
 
 interface CategoryPageProps {
   onVisualSearch?: (productImageUrl?: string) => void;
@@ -158,7 +159,7 @@ export default function CategoryPage({ onVisualSearch }: CategoryPageProps) {
               "Category Recommendations" with current category passed in pageData. */}
           <div className="mt-10">
             <RecommendationsWidget
-              selectorName="Category Recommendations"
+              selectorName={dySelectors.category.recs}
               title="You might also like"
               pageType="CATEGORY"
               pageData={{ category: meta?.label ?? category }}

@@ -8,6 +8,7 @@ import AppPromoBanner from '../components/AppPromoBanner';
 import { MastercardStrip } from '../components/MastercardPromo';
 import { blogPosts, formatBlogDate } from '../data/blog';
 import { featuredCategories, findPlan, plans } from '../data/plans';
+import { dySelectors } from '../config/dy-selectors';
 
 interface HomePageProps {
   onVisualSearch?: (productImageUrl?: string) => void;
@@ -69,7 +70,7 @@ export default function HomePage({ onVisualSearch }: HomePageProps) {
       {/* [DY INTEGRATION] Recommendations: "Recommended for you" — DY Choose
           selector "NovaPower Homepage Recommendations" */}
       <RecommendationsWidget
-        selectorName="NovaPower Homepage Recommendations"
+        selectorName={dySelectors.homepage.recs}
         title="Recommended for you"
         pageType="HOMEPAGE"
         fallbackPlans={FALLBACK_HERO_RECS}

@@ -3,6 +3,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Leaf, ShieldCheck, Smartphone, S
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useDYChoose } from '../hooks/useDYChoose';
+import { dySelectors, logDYSelectorRequest } from '../config/dy-selectors';
 
 // [DY INTEGRATION] Personalized hero banner. The selector
 // "NovaPower Homepage Hero" should be created in the DY console as an
@@ -95,9 +96,13 @@ function badgeIconFor(theme?: HeroVariation['theme']) {
 export default function HeroBanner() {
   // [DY INTEGRATION] Fetch the personalized hero variation from DY Choose.
   const { data, isLoading } = useDYChoose({
-    selectorNames: ['NovaPower Homepage Hero'],
+    selectorNames: [dySelectors.homepage.hero],
     pageType: 'HOMEPAGE',
   });
+  
+  useEffect(() => {
+    logDYSelectorRequest('homepage', 'hero', dySelectors.homepage.hero);
+  }, []);
 
   const dyVariation = extractVariation(data);
   // When DY personalizes, show just that variation; otherwise rotate the carousel.
