@@ -9,10 +9,10 @@
 //       https://dy.dev/reference/choose
 
 interface ChooseRequestBody {
-  selectorNames?: string[];     // e.g. ["NovaPower Homepage Hero", "Recommended Plans"]
+  selectorNames?: string[];
   selectorGroups?: string[];
   pageType?: string;            // HOMEPAGE | CATEGORY | PRODUCT | CART | OTHER
-  pageData?: string[];          // category names for CATEGORY, sku list for PRODUCT/CART
+  pageData?: Record<string, any>;  // Changed to Record instead of string[]
   pageLocation?: string;
   locale?: string;
   userAgent?: string;
@@ -43,6 +43,20 @@ export default async function handler(req: any, res: any) {
   const userAgent = body.userAgent || 'Mozilla/5.0';
   const deviceType = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent) ? 'MOBILE' : 'DESKTOP';
 
+  // Build context.page.data array based on pageType
+  let pageDataArray: string[] = [];
+  const pageType = body.pageType || 'HOMEPAGE';
+  const pageData = body.pageData ?? {};
+
+  if (pageType === 'PRODUCT' && pageData.sku) {
+    pageDataArray = [pageData.sku];
+  } else if (pageType === 'CATEGORY' && pageData.category) {
+    pageDataArray = [pageData.category];
+  } else if (pageType === 'CART' && Array.isArray(pageData.skus)) {
+    pageDataArray = pageData.skus;
+  }
+  // else: HOMEPAGE or OTHER → empty array
+
   const payload = {
     user: { active_consent_accepted: true, dyid: '123', dyid_server: '123' },
     session: { dy: 'ohyr6v42l9zd4bpinnvp7urjjx9lrssw' },
@@ -52,8 +66,8 @@ export default async function handler(req: any, res: any) {
     },
     context: {
       page: {
-        type: body.pageType || 'HOMEPAGE',
-        data: body.pageData ?? [],
+        type: pageType,
+        data: pageDataArray,
         location: body.pageLocation || 'https://novapower.demo',
         locale: body.locale || 'en_US',
       },
