@@ -88,6 +88,21 @@ export default async function handler(req: any, res: any) {
       return res.status(response.status).json({ error: 'Choose request failed', details: text });
     }
     const data = await response.json();
+
+    // [DY INTEGRATION] Set DY cookies in the browser response headers.
+    // DY returns cookies needed for user identification and session tracking:
+    //   _dyid_server: user identifier (persistent, 1 year)
+    //   _dyjsession: session token (temporary, 30 minutes)
+    // Without these cookies set on the browser, DY cannot calculate affinity
+    // profiles or track the user across pages.
+    if (data.cookies && Array.isArray(data.cookies)) {
+      data.cookies.forEach((cookie: { name: string; value: string; maxAge?: string | number }) => {
+        const maxAge = cookie.maxAge || '31556926'; // default 1 year
+        const setCookieHeader = `${cookie.name}=${cookie.value}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+        res.appendHeader('Set-Cookie', setCookieHeader);
+      });
+    }
+
     return res.status(200).json(data);
   } catch (error) {
     console.error('[DY Choose] Proxy error:', error);
