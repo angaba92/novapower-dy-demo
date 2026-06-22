@@ -6,22 +6,38 @@
     <title>NovaPower — Energy, Broadband & Mobile</title>
     <meta name="description" content="NovaPower — green energy, fiber broadband and mobile plans. Switch in minutes." />
 
-    <!-- [DY INTEGRATION] Dynamic Yield Context Script
-         Loaded as early as possible. The Section ID below maps to the NovaPower
-         section in the DY console; for this demo we reuse the sinsay_v2 section
-         (8795021). Replace with your own when pointing at a real telco section.
+    <!-- [DY INTEGRATION] Dynamic Yield — native client-side loader.
+         The Section ID is injected at build time from VITE_DY_SECTION_ID so an
+         SE can point the demo at ANY DY account without code changes.
          Docs: https://support.dynamicyield.com/hc/en-us/articles/360039237694
+
+         Load order (must not change):
+           1. recommendationContext  (computed from the current URL)
+           2. api_dynamic.js         (per-section experiences API)
+           3. api_static.js          (static smart objects / variations)
     -->
     <script type="text/javascript">
-      window.DY = window.DY || {};
-      window.DY.recommendationContext = { type: 'HOMEPAGE', data: [] };
+      // Compute the initial DY page context from the URL *before* the loader
+      // runs, so the very first pageview is evaluated with the right context.
+      // SPA route changes are handled later by src/hooks/useDYContext.ts.
+      (function () {
+        window.DY = window.DY || {};
+        var path = window.location.pathname;
+        var ctx = { type: 'OTHER', data: [path] };
+        if (path === '/') {
+          ctx = { type: 'HOMEPAGE', data: [] };
+        } else if (path.indexOf('/plans/') === 0) {
+          var category = decodeURIComponent(path.split('/')[2] || '');
+          ctx = { type: 'CATEGORY', data: category ? [category] : [] };
+        } else if (path.indexOf('/plan/') === 0) {
+          var sku = decodeURIComponent(path.split('/')[2] || '');
+          ctx = { type: 'PRODUCT', data: sku ? [sku] : [] };
+        }
+        window.DY.recommendationContext = ctx;
+      })();
     </script>
-    <!--
-      In production replace the script below with the real DY loader:
-      <script type="text/javascript" src="//cdn.dynamicyield.com/api/8795021/api_dynamic.js"></script>
-      <script type="text/javascript" src="//cdn.dynamicyield.com/api/8795021/api_static.js"></script>
-      The demo bypasses the loader and calls DY directly through the proxies in /api.
-    -->
+    <script type="text/javascript" src="//cdn.dynamicyield.com/api/%VITE_DY_SECTION_ID%/api_dynamic.js"></script>
+    <script type="text/javascript" src="//cdn.dynamicyield.com/api/%VITE_DY_SECTION_ID%/api_static.js"></script>
   </head>
   <body class="bg-[#f5faff]">
     <div id="root"></div>

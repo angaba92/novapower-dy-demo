@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, ChevronLeft, ChevronRight, Leaf, ShieldCheck, Smartphone, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useDYChoose } from '../hooks/useDYChoose';
-import { dySelectors, logDYSelectorRequest } from '../config/dy-selectors';
+import { dySlots, logDYSlot } from '../config/dy-slots';
+import DYSlotBadge from './DYSlotBadge';
+import { useDYSlotOverride } from '../hooks/useDYSlotOverride';
 
 // [DY INTEGRATION] Personalized hero banner. The selector
 // "NovaPower Homepage Hero" should be created in the DY console as an
@@ -94,19 +95,17 @@ function badgeIconFor(theme?: HeroVariation['theme']) {
 }
 
 export default function HeroBanner() {
-  // [DY INTEGRATION] Fetch the personalized hero variation from DY Choose.
-  const { data, isLoading } = useDYChoose({
-    selectorNames: [dySelectors.homepage.hero],
-    pageType: 'HOMEPAGE',
-  });
-  
+  // [DY INTEGRATION] Native client-side hero slot. The carousel below is the
+  // default content; DY personalizes it by targeting `#${dySlots.homepageHero}`
+  // with a Custom Action when a homepage hero campaign is live.
+  const slotRef = useRef<HTMLElement>(null);
+  const overridden = useDYSlotOverride(slotRef);
+
   useEffect(() => {
-    logDYSelectorRequest('homepage', 'hero', dySelectors.homepage.hero);
+    logDYSlot(dySlots.homepageHero, 'homepage hero');
   }, []);
 
-  const dyVariation = extractVariation(data);
-  // When DY personalizes, show just that variation; otherwise rotate the carousel.
-  const slides = dyVariation ? [dyVariation] : SLIDES;
+  const slides = SLIDES;
   const count = slides.length;
   const [index, setIndex] = useState(0);
 
@@ -126,11 +125,16 @@ export default function HeroBanner() {
 
   return (
     <section
-      id="dy-hero-banner"
-      data-dy-campaign="NovaPower Homepage Hero"
+      id={dySlots.homepageHero}
+      ref={slotRef}
+      data-dy-slot={dySlots.homepageHero}
       className="relative overflow-hidden rounded-2xl shadow-2xl"
       style={{ minHeight: '500px' }}
     >
+      {/* Single direct child wrapping the React fallback. `display:contents`
+          keeps absolute-positioned children anchored to the section while
+          giving the override-detector one stable direct child to watch. */}
+      <div data-dy-fallback style={{ display: 'contents' }}>
       {/* Crossfading media layer (image poster + looping video per slide) */}
       <AnimatePresence mode="sync">
         <motion.div
@@ -244,38 +248,8 @@ export default function HeroBanner() {
           </div>
         </>
       )}
-
-      {/* DY personalization badge */}
-      {isLoading && (
-        <div className="absolute top-3 right-3 z-20 text-[10px] uppercase tracking-wider bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-white">
-          Personalizing…
-        </div>
-      )}
-      {!isLoading && dyVariation && (
-        <div className="absolute top-3 right-3 z-20 text-[10px] uppercase tracking-wider bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-white">
-          Personalized by DY
-        </div>
-      )}
+      </div>
+      <DYSlotBadge overridden={overridden} slot={dySlots.homepageHero} />
     </section>
   );
-}
-
-function extractVariation(data: any): HeroVariation | null {
-  try {
-    const payload = data?.choices?.[0]?.variations?.[0]?.payload?.data;
-    if (!payload || payload.fallback) return null;
-    if (typeof payload.headline !== 'string') return null;
-    return {
-      headline: payload.headline,
-      subhead: payload.subhead ?? '',
-      ctaLabel: payload.ctaLabel ?? 'See plan',
-      ctaHref: payload.ctaHref ?? '/',
-      badge: payload.badge,
-      theme: payload.theme,
-      image: payload.image,
-      video: payload.video,
-    };
-  } catch {
-    return null;
-  }
 }

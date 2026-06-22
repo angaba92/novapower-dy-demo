@@ -6,7 +6,7 @@ import PlanCard from '../components/PlanCard';
 import RecommendationsWidget from '../components/RecommendationsWidget';
 import { featuredCategories, plansByCategory } from '../data/plans';
 import type { Plan } from '../types';
-import { dySelectors } from '../config/dy-selectors';
+import { dySlots } from '../config/dy-slots';
 
 interface CategoryPageProps {
   onVisualSearch?: (productImageUrl?: string) => void;
@@ -155,14 +155,13 @@ export default function CategoryPage({ onVisualSearch }: CategoryPageProps) {
             </div>
           )}
 
-          {/* [DY INTEGRATION] Category recommendations — DY Choose selector
-              "Category Recommendations" with current category passed in pageData. */}
+          {/* [DY INTEGRATION] Category recommendations slot — DY targets #dy-slot-category-recs.
+              Current category flows to DY via window.DY.recommendationContext (useDYContext). */}
           <div className="mt-10">
             <RecommendationsWidget
-              selectorName={dySelectors.category.recs}
+              slot={dySlots.categoryRecs}
+              label="category recs"
               title="You might also like"
-              pageType="CATEGORY"
-              pageData={{ category: meta?.label ?? category }}
               fallbackPlans={allPlans.slice(0, 4)}
               onVisualSearch={onVisualSearch}
             />

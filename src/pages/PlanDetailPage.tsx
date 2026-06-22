@@ -19,7 +19,7 @@ import { findPlan, plans } from '../data/plans';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../context/ConfigContext';
 import { trackEvent } from '../utils/dyEvents';
-import { dySelectors } from '../config/dy-selectors';
+import { dySlots } from '../config/dy-slots';
 
 interface PlanDetailPageProps {
   onVisualSearch?: (productImageUrl?: string) => void;
@@ -297,14 +297,13 @@ export default function PlanDetailPage({ onVisualSearch }: PlanDetailPageProps) 
         </section>
       )}
 
-      {/* [DY INTEGRATION] PDP recommendations — DY Choose selector
-          "PDP Recommendations" with the current SKU passed as pageData. */}
+      {/* [DY INTEGRATION] PDP recommendations slot — DY targets #dy-slot-pdp-recs.
+          The current SKU flows to DY via window.DY.recommendationContext (useDYContext). */}
       <div className="mt-12">
         <RecommendationsWidget
-          selectorName={dySelectors.product.recs}
+          slot={dySlots.pdpRecs}
+          label="pdp recs"
           title="Customers also chose"
-          pageType="PRODUCT"
-          pageData={{ sku: plan.sku, category: plan.category_l1 }}
           fallbackPlans={plans
             .filter((p) => p.category_l1 === plan.category_l1 && p.sku !== plan.sku)
             .slice(0, 4)}

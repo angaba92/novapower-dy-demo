@@ -1,77 +1,64 @@
+import { useEffect, useRef } from 'react';
 import type { Plan } from '../types';
 import PlanCard from './PlanCard';
-import { useDYChoose } from '../hooks/useDYChoose';
+import DYSlotBadge from './DYSlotBadge';
+import { logDYSlot } from '../config/dy-slots';
+import { useDYSlotOverride } from '../hooks/useDYSlotOverride';
 
 interface RecommendationsWidgetProps {
-  /** DY selector names to fetch — match the selectors created in the DY console. */
-  selectorName: string;
+  /**
+   * DY slot DIV id that this widget exposes. Create a campaign in the DY admin
+   * whose Custom Action / Recommendation Widget targets `#${slot}` to inject
+   * personalized content here. Defined centrally in config/dy-slots.ts.
+   */
+  slot: string;
+  /** Human label, used only for the dev-mode slot log. */
+  label?: string;
   title: string;
-  /** Page-type sent to DY so the widget can be context-aware. */
-  pageType?: string;
-  pageData?: string[] | Record<string, unknown>;
-  /** Fallback plans rendered when DY returns no results (or has no key). */
+  /**
+   * Fallback plans rendered as the slot's default content. DY overrides this
+   * DOM via its Custom Action when a matching campaign is live; until then the
+   * curated fallback keeps the page populated so the demo never looks empty.
+   */
   fallbackPlans: Plan[];
   onVisualSearch?: (productImageUrl?: string) => void;
 }
 
-// [DY INTEGRATION] Recommendations widget. Hits /api/dy-choose with the
-// supplied selectorName (e.g. "Recommended Plans for You", "Bundle and Save",
-// "Frequently Added Together"). When DY returns no live data — common in the
-// demo without a populated section — we render a fallback strip of curated
-// plans so the page never looks empty.
+// [DY INTEGRATION] Native client-side recommendations slot. We render an
+// addressable container (`#${slot}`) that DY populates via campaigns configured
+// in the admin. The curated fallback plans live inside a `[data-dy-fallback]`
+// wrapper as the default content; DY's Custom Action replaces them when a
+// campaign matches. A dev-only badge flags which state the slot is in.
 export default function RecommendationsWidget({
-  selectorName,
+  slot,
+  label,
   title,
-  pageType,
-  pageData,
   fallbackPlans,
   onVisualSearch,
 }: RecommendationsWidgetProps) {
-  const { data, isLoading } = useDYChoose({
-    selectorNames: [selectorName],
-    pageType,
-    pageData,
-  });
+  const slotRef = useRef<HTMLDivElement>(null);
+  const overridden = useDYSlotOverride(slotRef);
 
-  const dySlots = extractSlots(data);
-  const useDY = dySlots.length > 0;
-  const plans = useDY ? (dySlots as Plan[]) : fallbackPlans;
+  useEffect(() => {
+    logDYSlot(slot, label ?? title);
+  }, [slot, label, title]);
 
-  if (plans.length === 0) return null;
+  if (fallbackPlans.length === 0) return null;
 
   return (
-    <section className="my-10">
+    <section className="my-10 relative" data-dy-slot={slot}>
       <div className="flex items-end justify-between mb-4">
         <h2 className="text-xl md:text-2xl font-bold text-[#0c1b2a] dark:text-slate-100">{title}</h2>
-        {useDY && (
-          <span className="text-[10px] uppercase tracking-wider text-[#0a4ea8] bg-[#e9f2ff] px-2 py-0.5 rounded dark:bg-blue-900/30 dark:text-blue-300">
-            Personalized by Dynamic Yield
-          </span>
-        )}
-        {isLoading && (
-          <span className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-slate-400">Loading…</span>
-        )}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {plans.slice(0, 4).map((p, i) => (
-          <PlanCard key={(p as any).sku ?? i} plan={p as any} onVisualSearch={onVisualSearch} fromDY={useDY} />
-        ))}
+      {/* DY targets this DIV id; the [data-dy-fallback] child is the default render. */}
+      <div id={slot} ref={slotRef}>
+        <div data-dy-fallback className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {fallbackPlans.slice(0, 4).map((p, i) => (
+            <PlanCard key={p.sku ?? i} plan={p} onVisualSearch={onVisualSearch} />
+          ))}
+        </div>
       </div>
+      <DYSlotBadge overridden={overridden} slot={slot} />
     </section>
   );
-}
-
-function extractSlots(data: any): any[] {
-  try {
-    const payload = data?.choices?.[0]?.variations?.[0]?.payload?.data;
-    if (!payload || payload.fallback) return [];
-    if (Array.isArray(payload.slots)) {
-      return payload.slots
-        .map((s: any) => (s.item ? s.item : s.productData ? { ...s.productData, sku: s.sku } : s))
-        .filter(Boolean);
-    }
-    return [];
-  } catch {
-    return [];
-  }
 }

@@ -8,7 +8,7 @@ import AppPromoBanner from '../components/AppPromoBanner';
 import { MastercardStrip } from '../components/MastercardPromo';
 import { blogPosts, formatBlogDate } from '../data/blog';
 import { featuredCategories, findPlan, plans } from '../data/plans';
-import { dySelectors } from '../config/dy-selectors';
+import { dySlots } from '../config/dy-slots';
 
 interface HomePageProps {
   onVisualSearch?: (productImageUrl?: string) => void;
@@ -67,12 +67,11 @@ export default function HomePage({ onVisualSearch }: HomePageProps) {
         </div>
       </section>
 
-      {/* [DY INTEGRATION] Recommendations: "Recommended for you" — DY Choose
-          selector "NovaPower Homepage Recommendations" */}
+      {/* [DY INTEGRATION] Recommendations slot — DY targets #dy-slot-homepage-recs */}
       <RecommendationsWidget
-        selectorName={dySelectors.homepage.recs}
+        slot={dySlots.homepageRecs}
+        label="homepage recs"
         title="Recommended for you"
-        pageType="HOMEPAGE"
         fallbackPlans={FALLBACK_HERO_RECS}
         onVisualSearch={onVisualSearch}
       />
@@ -201,11 +200,11 @@ export default function HomePage({ onVisualSearch }: HomePageProps) {
         </div>
       </section>
 
-      {/* [DY INTEGRATION] Trending — DY Choose selector "Trending Plans" */}
+      {/* [DY INTEGRATION] Trending slot — DY targets #dy-slot-homepage-trending */}
       <RecommendationsWidget
-        selectorName="Trending Plans"
+        slot={dySlots.homepageTrending}
+        label="homepage trending"
         title="Trending across NovaPower"
-        pageType="HOMEPAGE"
         fallbackPlans={FALLBACK_TRENDING}
         onVisualSearch={onVisualSearch}
       />

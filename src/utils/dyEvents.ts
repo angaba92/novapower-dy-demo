@@ -47,8 +47,9 @@ export async function trackEvent(
 }
 
 // [DY INTEGRATION] Updates window.DY.recommendationContext for the current
-// page. The DY context script reads this on every page-load to determine
-// which campaigns / experiences to evaluate. Standard page types:
+// page and notifies the DY loader of the SPA navigation. The DY context script
+// reads `recommendationContext` to decide which campaigns / experiences to
+// evaluate. Standard page types:
 //   - HOMEPAGE
 //   - CATEGORY (data: array of category names)
 //   - PRODUCT  (data: [sku])
@@ -59,11 +60,15 @@ export function setDYContext(type: string, data: string[] = []): void {
   w.DY = w.DY || {};
   w.DY.recommendationContext = { type, data };
 
-  // If the DY loader has registered an in-page API, ping it so SPA navigations
-  // are treated like a fresh pageview.
+  // Notify DY's in-page API that an SPA navigation happened so the new context
+  // is evaluated and counted as a fresh pageview (native client-side flow).
   if (w.DY.API && typeof w.DY.API === 'function') {
     try {
-      w.DY.API('spa', { context: { type, data }, url: window.location.href });
+      w.DY.API('spa', {
+        context: { type, data },
+        url: window.location.href,
+        countAsPageview: true,
+      });
     } catch {
       /* ignore */
     }

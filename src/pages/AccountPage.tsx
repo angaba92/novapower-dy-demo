@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { findPlan, plans } from '../data/plans';
 import type { Plan } from '../types';
-import { dySelectors } from '../config/dy-selectors';
+import { dySlots } from '../config/dy-slots';
 
 // Mocked "current contracts" so the account view feels real even with empty cart.
 const MOCK_CURRENT_CONTRACTS = ['BND-DUAL-EG', 'MOB-CON-25'];
@@ -318,15 +318,13 @@ function AccountDashboard({
         </Link>
       </section>
 
-      {/* [DY INTEGRATION] Account-level recommendations — DY Choose selector
-          "Account Recommendations". DY personalizes based on the user's full
-          affinity profile and known contracts. */}
+      {/* [DY INTEGRATION] Account recommendations slot — DY targets #dy-slot-account-recs.
+          DY personalizes from the user's full affinity profile and known contracts. */}
       <div className="mt-12">
         <RecommendationsWidget
-          selectorName={dySelectors.account.recs}
+          slot={dySlots.accountRecs}
+          label="account recs"
           title="Recommended add-ons for you"
-          pageType="OTHER"
-          pageData={{ activeContracts: contracts.map((c) => c.sku) }}
           fallbackPlans={plans
             .filter((p) => p.plan_type === 'Add-on' || p.plan_type === 'Smart Home')
             .slice(0, 4)}

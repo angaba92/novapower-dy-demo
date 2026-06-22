@@ -24,15 +24,38 @@ The dev server proxies all `/api/*` calls to lightweight serverless handlers und
 ### Environment variables
 
 ```
-# .env.local — values are reused from the sinsay_v2 demo so the feed and
-# section IDs are already wired.
+# .env.local — copy from .env.example.
+
+# CLIENT-SIDE (browser, VITE_-prefixed). The ONE knob an SE changes to point the
+# whole demo at any DY account — no code changes needed.
+VITE_DY_SECTION_ID=8795021
+
+# SERVER-SIDE (never bundled in the client) — only for DY features that still
+# need a server-side key (Shopping Muse, Visual Search). The recommendations /
+# choose flow is now 100% client-side and needs no key here.
 VISUALSEARCH_API_KEY=<dy-visual-search-key>
 SHOPPINGMUSE_API_KEY=<dy-agent-assistant-key>     # optional
-DY_CHOOSE_API_KEY=<dy-choose-api-key>             # optional
-DY_EVENT_API_KEY=<dy-event-collection-key>        # optional
 ```
 
-When `DY_CHOOSE_API_KEY` / `DY_EVENT_API_KEY` are unset the `/api/dy-choose` and `/api/dy-event` endpoints fall back to deterministic mock responses — useful for offline demos.
+> **DY recommendations are now native client-side.** The old `/api/dy-choose`
+> proxy and its `DY_CHOOSE_API_KEY` are gone. The DY loader scripts
+> (`api_dynamic.js` + `api_static.js`) run in the browser and DY injects content
+> into the slot DIVs directly (see §3.4). Optional `VITE_DY_SLOT_*` overrides let
+> you rename slot ids per deployment — see `.env.example`.
+
+### SE workflow — point the demo at any DY account
+
+1. Set `VITE_DY_SECTION_ID` to the prospect's DY section id and restart the dev
+   server (or set it in Vercel and redeploy).
+2. In the DY admin, create campaigns whose **Custom Action / Recommendation
+   Widget** targets the slot DIV ids (`#dy-slot-homepage-hero`,
+   `#dy-slot-pdp-recs`, …). DY handles `_dyid`, sessions, cookies, RecsCom and
+   audience targeting natively — the Demonstration Extension's affinity bubble
+   works out of the box.
+3. No per-demo code changes. Until a campaign fires, each slot shows curated
+   React fallback content so the site never looks empty. In **dev builds** a tiny
+   corner badge marks each slot **`DY`** (overridden by a live campaign) or
+   **`fallback`** (default content) so you can verify which campaigns fired.
 
 ### Useful DY config defaults
 
@@ -89,22 +112,24 @@ Every place DY is wired up is marked with a `// [DY INTEGRATION]` comment. Quick
 * **`src/hooks/useShoppingMuse.ts`** — mutation that POSTs to `/api/shopping-muse`. Accepts `chatId`, `pageType` and `pageData` so DY can scope its answers to the current product / category.
 * **`api/shopping-muse.ts`** — server proxy that forwards to `https://dy-api.com/v2/serve/user/agent-assistant`.
 
-### 3.4 Recommendations & banners
+### 3.4 Recommendations & banners (native client-side slots)
 
-* **`src/components/HeroBanner.tsx`** + **`src/components/RecommendationsWidget.tsx`** — both use the `useDYChoose` hook (`src/hooks/useDYChoose.ts`) which posts a `selectorNames` payload to `https://dy-api.com/v2/serve/user/choose` via `/api/dy-choose`. Falls back to a deterministic local rotation when DY returns nothing.
-* DY **Choose selectors** referenced by the demo:
-  * `NovaPower Homepage Hero` (HeroBanner)
-  * `NovaPower Homepage Recommendations` (HomePage — "Recommended for you")
-  * `Trending Plans` (HomePage — "Trending across NovaPower")
-  * `Category Recommendations` (CategoryPage — "You might also like")
-  * `PDP Recommendations` (PlanDetailPage — "Customers also chose")
-  * `Cart Recommendations` (CartPage — "Make it a complete plan")
-  * `Account Recommendations` (AccountPage — "Recommended add-ons for you")
+* **`src/components/HeroBanner.tsx`** + **`src/components/RecommendationsWidget.tsx`** — render an addressable **slot DIV** (`#dy-slot-…`) wrapping curated React fallback content. DY's loader evaluates campaigns against `window.DY.recommendationContext` and injects personalized content into the slot via a **Custom Action / Recommendation Widget** configured in the DY admin. No proxy, no `selectorNames`, no manual `choose` fetch.
+* **`src/config/dy-slots.ts`** — single source of truth for the slot ids and `VITE_DY_SECTION_ID`, with optional `VITE_DY_SLOT_*` overrides.
+* **`src/hooks/useDYSlotOverride.ts`** + **`src/components/DYSlotBadge.tsx`** — dev-only detector + corner badge showing whether each slot is DY-overridden or showing fallback.
+* Slot DIV ids campaigns should target:
+  * `#dy-slot-homepage-hero` (HeroBanner)
+  * `#dy-slot-homepage-recs` (HomePage — "Recommended for you")
+  * `#dy-slot-homepage-trending` (HomePage — "Trending across NovaPower")
+  * `#dy-slot-category-recs` (CategoryPage — "You might also like")
+  * `#dy-slot-pdp-recs` (PlanDetailPage — "Customers also chose")
+  * `#dy-slot-cart-recs` (CartPage — "Make it a complete plan")
+  * `#dy-slot-account-recs` (AccountPage — "Recommended add-ons for you")
 
 ### 3.5 Context scripts
 
-* **`index.html`** — bootstraps `window.DY` and exposes a commented-out `dynamic.js` loader for `sectionId 8787656`.
-* **`src/hooks/useDYContext.ts`** — runs on every route change. Maps the SPA URL to the correct DY context type (`HOMEPAGE`, `CATEGORY`, `PRODUCT`, `CART`, `OTHER`) and updates `window.DY.recommendationContext` accordingly.
+* **`index.html`** — bootstraps `window.DY.recommendationContext` from the current URL, then loads the real DY loader (`api_dynamic.js` + `api_static.js`) for `%VITE_DY_SECTION_ID%`.
+* **`src/hooks/useDYContext.ts`** — runs on every route change. Maps the SPA URL to the correct DY context type (`HOMEPAGE`, `CATEGORY`, `PRODUCT`, `CART`, `OTHER`) and updates `window.DY.recommendationContext`, then calls `DY.API('spa', { …, countAsPageview: true })`.
 * **`src/utils/dyEvents.ts`** — `trackEvent(name, payload)` prefers `window.DY.API` when the production loader is present; otherwise it posts to `/api/dy-event` (which forwards to `https://dy-api.com/v2/collect/user/event`).
 
 ### 3.6 Event tracking
@@ -212,10 +237,10 @@ For this demo, the feed is hosted by DY at `feedId=85470` (already wired via `Co
 .
 ├── api/                       # Vercel-style serverless proxies
 │   ├── dy-search.ts           # POST → recs-search.dynamicyield.com
-│   ├── dy-choose.ts           # POST → dy-api.com/v2/serve/user/choose
 │   ├── dy-event.ts            # POST → dy-api.com/v2/collect/user/event
 │   ├── shopping-muse.ts       # POST → dy-api.com/v2/serve/user/agent-assistant
 │   └── visual-search.ts       # POST → dy-api.com/v2/serve/user/search
+│                              # (dy-choose.ts removed — recs are client-side now)
 ├── public/
 ├── scripts/
 │   └── generate-feed.mjs      # CSV generator
@@ -223,7 +248,8 @@ For this demo, the feed is hosted by DY at `feedId=85470` (already wired via `Co
 │   ├── components/            # Header, PlanCard, ConfigPanel, overlays, …
 │   ├── context/               # CartContext, ConfigContext
 │   ├── data/plans.ts          # Source of truth for the catalog
-│   ├── hooks/                 # useDYSearch, useDYChoose, useDYContext, …
+│   ├── config/dy-slots.ts     # DY section id + slot DIV ids (VITE_ overrides)
+│   ├── hooks/                 # useDYSearch, useDYContext, useDYSlotOverride, …
 │   ├── pages/                 # Home, Category, PlanDetail, Cart, Checkout, Account, Search
 │   ├── utils/                 # imageToBase64, dyEvents, dyResponseAdapter
 │   ├── App.tsx                # Routes + global overlays

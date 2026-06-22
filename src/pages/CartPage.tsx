@@ -6,7 +6,7 @@ import { MastercardPdpPromo } from '../components/MastercardPromo';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../context/ConfigContext';
 import { findPlan, plans } from '../data/plans';
-import { dySelectors } from '../config/dy-selectors';
+import { dySlots } from '../config/dy-slots';
 
 export default function CartPage() {
   const { lines, removeLine, updateQuantity, monthlyTotal, count } = useCart();
@@ -31,13 +31,12 @@ export default function CartPage() {
           Explore plans
         </Link>
 
-        {/* [DY INTEGRATION] Empty-cart recommendations — DY Choose selector
-            "Cart Recommendations" with cart context. */}
+        {/* [DY INTEGRATION] Empty-cart recommendations slot — DY targets #dy-slot-cart-recs */}
         <div className="mt-12 text-left">
           <RecommendationsWidget
-            selectorName={dySelectors.cart.recs}
+            slot={dySlots.cartRecs}
+            label="cart recs (empty)"
             title="Popular starting points"
-            pageType="CART"
             fallbackPlans={fallbackCrossSell}
           />
         </div>
@@ -174,14 +173,13 @@ export default function CartPage() {
         </aside>
       </div>
 
-      {/* [DY INTEGRATION] Cross-sell on cart — DY Choose selector
-          "Cart Recommendations" with cart SKUs in pageData. */}
+      {/* [DY INTEGRATION] Cross-sell slot — DY targets #dy-slot-cart-recs.
+          Cart SKUs flow to DY via window.DY.recommendationContext (useDYContext). */}
       <div className="mt-12">
         <RecommendationsWidget
-          selectorName={dySelectors.cart.recs}
+          slot={dySlots.cartRecs}
+          label="cart cross-sell"
           title="Make it a complete plan"
-          pageType="CART"
-          pageData={{ skus: lines.map((l) => l.sku) }}
           fallbackPlans={fallbackCrossSell}
         />
       </div>
