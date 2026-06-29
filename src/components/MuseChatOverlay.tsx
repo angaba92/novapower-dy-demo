@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Loader2, Send, ShoppingCart, Sparkles, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useShoppingMuse, type MuseResponse } from '../hooks/useShoppingMuse';
+import { useShoppingMuse, type MuseResponse, type MuseWidget } from '../hooks/useShoppingMuse';
 import { useConfig } from '../context/ConfigContext';
 import { useCart } from '../context/CartContext';
 import { plans } from '../data/plans';
@@ -12,6 +12,65 @@ import { plans } from '../data/plans';
 
 interface MuseChatOverlayProps {
   onClose: () => void;
+}
+
+type MuseSlot = NonNullable<MuseWidget['slots']>[number];
+
+// [FIX] Each product card owns its own `added` state. Previously this useState
+// lived inside a .map() callback in the render body, which violates the Rules
+// of Hooks (React error #310: hook order changes when widgets/slots vary).
+// Extracting it into a real component makes the hook call stable per card.
+function MuseProductCard({ slot, currency }: { slot: MuseSlot; currency: string }) {
+  const { addPlan } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const data = (slot.productData ?? {}) as Record<string, any>;
+  const img = data.image_url || data.image_url_small || data.imageUrl || '';
+  const name = data.name || data.productName || slot.sku || 'Plan';
+  const price =
+    typeof data.price === 'number' ? data.price.toFixed(2).replace('.', ',') : data.price;
+  const planObj = plans.find((p) => p.sku === slot.sku);
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (planObj) {
+      addPlan(planObj);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    }
+  };
+
+  return (
+    <a
+      href={data.url || `/plan/${slot.sku}`}
+      className="group/card shrink-0 w-36 rounded-lg overflow-hidden bg-white border border-gray-200 hover:border-[#0a4ea8]/40 hover:shadow-md transition-shadow"
+    >
+      <div className="relative">
+        {img && <img src={img} alt={name} className="w-full h-24 object-cover" loading="lazy" />}
+        {planObj && (
+          <button
+            type="button"
+            onClick={handleAdd}
+            className={`absolute bottom-1.5 right-1.5 flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full shadow transition-all
+              ${added ? 'bg-[#2dbe60] text-white' : 'bg-white/90 backdrop-blur-sm text-[#0a4ea8] border border-[#0a4ea8]/40 hover:bg-[#0a4ea8] hover:text-white'}`}
+            title="Add to plan"
+          >
+            <ShoppingCart className="w-3 h-3" />
+            {added ? '✓' : '+'}
+          </button>
+        )}
+      </div>
+      <div className="p-2">
+        <div className="text-[12px] font-semibold leading-tight line-clamp-2">{name}</div>
+        {price && (
+          <div className="text-[12px] font-bold text-[#062f66] mt-1">
+            {price} {currency}/mo
+          </div>
+        )}
+      </div>
+    </a>
+  );
 }
 
 interface ChatMessage {
@@ -30,7 +89,6 @@ const STARTER_PROMPTS = [
 
 export default function MuseChatOverlay({ onClose }: MuseChatOverlayProps) {
   const { config } = useConfig();
-  const { addPlan } = useCart();
   const muse = useShoppingMuse();
   const [chatId, setChatId] = useState<string | undefined>();
   const [draft, setDraft] = useState('');
@@ -122,56 +180,9 @@ export default function MuseChatOverlay({ onClose }: MuseChatOverlayProps) {
                       <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">{w.title}</div>
                     )}
                     <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1">
-                      {(w.slots ?? []).slice(0, 12).map((slot, i) => {
-                        const data = (slot.productData ?? {}) as Record<string, any>;
-                        const img =
-                          data.image_url || data.image_url_small || data.imageUrl || '';
-                        const name = data.name || data.productName || slot.sku || 'Plan';
-                        const price =
-                          typeof data.price === 'number' ? data.price.toFixed(2).replace('.', ',') : data.price;
-                        const [added, setAdded] = useState(false);
-                        const planObj = plans.find((p) => p.sku === slot.sku);
-                        const handleAdd = (e: React.MouseEvent) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (planObj) {
-                            addPlan(planObj);
-                            setAdded(true);
-                            setTimeout(() => setAdded(false), 2000);
-                          }
-                        };
-                        return (
-                           <a
-                            key={i}
-                            href={data.url || `/plan/${slot.sku}`}
-                            className="group/card shrink-0 w-36 rounded-lg overflow-hidden bg-white border border-gray-200 hover:border-[#0a4ea8]/40 hover:shadow-md transition-shadow"
-                          >
-                            <div className="relative">
-                              {img && <img src={img} alt={name} className="w-full h-24 object-cover" loading="lazy" />}
-                              {planObj && (
-                                <button
-                                  type="button"
-                                  onClick={handleAdd}
-                                  className={`absolute bottom-1.5 right-1.5 flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full shadow transition-all
-                                    ${added ? 'bg-[#2dbe60] text-white' : 'bg-white/90 backdrop-blur-sm text-[#0a4ea8] border border-[#0a4ea8]/40 hover:bg-[#0a4ea8] hover:text-white'}`}
-                                  title="Add to plan"
-                                >
-                                  <ShoppingCart className="w-3 h-3" />
-                                  {added ? '✓' : '+'}
-                                </button>
-                              )}
-                            </div>
-                            <div className="p-2">
-                              <div className="text-[12px] font-semibold leading-tight line-clamp-2">{name}</div>
-                              {price && (
-                                <div className="text-[12px] font-bold text-[#062f66] mt-1">
-                                  {price} {config.currency}/mo
-                                </div>
-                              )}
-                            </div>
-                          </a>
-                        );
-                      })}
+                      {(w.slots ?? []).slice(0, 12).map((slot, i) => (
+                        <MuseProductCard key={i} slot={slot} currency={config.currency} />
+                      ))}
                     </div>
                   </div>
                 ))}
